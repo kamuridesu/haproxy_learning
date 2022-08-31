@@ -1,0 +1,34 @@
+version: '3'
+services:
+  haproxy:
+    container_name: haproxy
+    image: haproxy
+    # build: .
+    volumes:
+      - ./config:/usr/local/etc/haproxy/
+    ports:
+      - 8081:81
+      - 8080:80
+    sysctls: 
+      - net.ipv4.ip_unprivileged_port_start=0
+    depends_on: 
+      - kuma
+      - site
+
+  kuma:
+    container_name: uptime_kuma
+    image: louislam/uptime-kuma:1
+    restart: always
+    ports:
+      - 3001:3001
+    volumes:
+      - uptime-kuma:/app/data
+
+  site:
+    container_name: site
+    image: site
+    ports:
+      - 8888:80
+
+volumes:
+  uptime-kuma:
